@@ -1,0 +1,2 @@
+icat enschede.json | jq '.[] | select (.price <= "200000")'
+
