@@ -1,12 +1,15 @@
 #!/bin/bash
 #set -x
 
+# Variables
 PRICE="175000"
+DATE='date +"%d-%m-%Y %H:%M"'
+
 mv enschede.json.output enschede.json.orig
 scrapy crawl funda -o enschede.json > /dev/null 2>&1
 
-#cat enschede.json | jq '.[] | select (.price <= "'$PRICE'" and .aangeboden == "Vandaag")' > enschede.json.output
-cat enschede.json | jq '.[] | select (.price <= "'$PRICE'")' > enschede.json.output
+cat enschede.json | jq '.[] | select (.price <= "'$PRICE'" and .aangeboden == "Vandaag")' > enschede.json.output
+#cat enschede.json | jq '.[] | select (.price <= "'$PRICE'")' > enschede.json.output
 rm -f enschede.json
 
 function notify 
@@ -48,7 +51,7 @@ if [ ! -z "$DIFF" ] || [ ! -z $(grep price enschede.json.output) ];
 		for x in $(cat enschede.json.output | jq '.address') ; do
 			if [ -z $(grep $x log.txt) ]; then
 			  eval $(cat enschede.json.output | jq -r 'select(.address == '$x') | to_entries | .[] | .key + "=\"" + .value + "\""')
-			  notify && echo "Mail send for $x" >> log.txt 
+			  notify && echo "$DATE : Mail send for $x" >> log.txt 
 			fi
 		done
 fi
